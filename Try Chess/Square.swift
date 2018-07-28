@@ -11,16 +11,21 @@ import UIKit
 class Square: UICollectionViewCell {
     
     var value = 0
+    var isOccupied = false
+    var isInBounds = true
 
     
-    func getX() -> Int
+    func getX() -> CGFloat
     {
-        return 5
+        
+        let x = center.x - 18.75
+        return x
     }
     
-    func getY() -> Int
+    func getY() -> CGFloat
     {
-        return 5
+        let y = center.y + 89.75 + 37.5
+        return y
     }
     
     func getPosition() -> CGPoint
