@@ -159,9 +159,12 @@ class ViewController: UIViewController, UICollectionViewDataSource, UICollection
             {
                 for piece in blackPieces
                 {
-                    print(piece.pieceColor+piece.pieceType)
-                    squares[indexPath.item].backgroundColor = .red
-                    pieceSelected.append(piece)
+                    if piece.getSquare() == squares[indexPath.item] //go to the square in all of whites pieces that is the same as the tapped square on the grid
+                    {
+                        print(piece.pieceColor+piece.pieceType)// for testing
+                        squares[indexPath.item].backgroundColor = .red //shows that it is selected
+                        pieceSelected.append(piece) //hold that piece
+                    }
                 }
             }
         }
@@ -174,7 +177,7 @@ class ViewController: UIViewController, UICollectionViewDataSource, UICollection
                     pieceSelected[0].getSquare().backgroundColor = pieceSelected[0].getSquare().color
                     pieceSelected[0].move(to: squares[indexPath.item])
                     pieceSelected.removeAll()
-                    //turn += 1
+                    turn += 1
                 }
             }
             if !pieceSelected.isEmpty

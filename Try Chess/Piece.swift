@@ -40,15 +40,15 @@ class Piece: UIImageView {
         case "Pawn":
             moves = pawnMoves(color: pieceColor)
         case "Rook":
-            moves = rookMoves(color: pieceColor)
+            moves = rookMoves()
         case "Knight":
             moves = knightMoves()
         case "Bishop":
-            moves = bishopMoves(color: pieceColor)
+            moves = bishopMoves()
         case "Queen":
-            moves = rookMoves(color: pieceColor) + bishopMoves(color: pieceColor)
+            moves = rookMoves() + bishopMoves()
         case "King":
-            moves = rookMoves(color: pieceColor) + bishopMoves(color: pieceColor)
+            moves = rookMoves() + bishopMoves()
         default:
             break
         }
@@ -113,14 +113,30 @@ class Piece: UIImageView {
                 pawnMoves.append(squaresGrid[pieceRow-1][pieceColumn])
                 
             }
-            if squaresGrid[pieceRow-1][pieceColumn+1].isOccupied && squaresGrid[pieceRow-1][pieceColumn].isInBounds
-            {
-                pawnMoves.append(squaresGrid[pieceRow-1][pieceColumn-1])
-            }
+//            if squaresGrid[pieceRow-1][pieceColumn+1].isOccupied && squaresGrid[pieceRow-1][pieceColumn].isInBounds
+//            {
+//                pawnMoves.append(squaresGrid[pieceRow-1][pieceColumn-1])
+//            }
             
             if !beenMoved && !squaresGrid[pieceRow-1][pieceColumn].isOccupied && !squaresGrid[pieceRow-2][pieceColumn].isOccupied
             {
                 pawnMoves.append(squaresGrid[pieceRow-2][pieceColumn])
+            }
+        }
+        else{
+            if !squaresGrid[pieceRow+1][pieceColumn].isOccupied && squaresGrid[pieceRow+1][pieceColumn].isInBounds
+            {
+                pawnMoves.append(squaresGrid[pieceRow+1][pieceColumn])
+                
+            }
+//            if squaresGrid[pieceRow+1][pieceColumn+1].isOccupied && squaresGrid[pieceRow+1][pieceColumn].isInBounds
+//            {
+//                pawnMoves.append(squaresGrid[pieceRow-1][pieceColumn-1])
+//            }
+            
+            if !beenMoved && !squaresGrid[pieceRow+1][pieceColumn].isOccupied && !squaresGrid[pieceRow+2][pieceColumn].isOccupied
+            {
+                pawnMoves.append(squaresGrid[pieceRow+2][pieceColumn])
             }
         }
         
@@ -129,7 +145,7 @@ class Piece: UIImageView {
     }
     
     
-    func rookMoves(color: String) -> Array<Square>
+    func rookMoves() -> Array<Square>
     {
         var up = true
         var down = true
@@ -154,7 +170,7 @@ class Piece: UIImageView {
             {
                 rookMoves.append(squaresGrid[pieceRow-index][pieceColumn])
             }
-            else if up && squaresGrid[pieceRow-index][pieceColumn].occupiedBy == "b"
+            else if up && squaresGrid[pieceRow-index][pieceColumn].occupiedBy != pieceColor
             {
                 rookMoves.append(squaresGrid[pieceRow-index][pieceColumn])
                 up = false
@@ -168,7 +184,7 @@ class Piece: UIImageView {
             {
                 rookMoves.append(squaresGrid[pieceRow+index][pieceColumn])
             }
-            else if down && squaresGrid[pieceRow+index][pieceColumn].occupiedBy == "b"
+            else if down && squaresGrid[pieceRow+index][pieceColumn].occupiedBy != pieceColor
             {
                 rookMoves.append(squaresGrid[pieceRow+index][pieceColumn])
                 down = false
@@ -182,7 +198,7 @@ class Piece: UIImageView {
             {
                 rookMoves.append(squaresGrid[pieceRow][pieceColumn+index])
             }
-            else if right && squaresGrid[pieceRow][pieceColumn+index].occupiedBy == "b"
+            else if right && squaresGrid[pieceRow][pieceColumn+index].occupiedBy != pieceColor
             {
                 rookMoves.append(squaresGrid[pieceRow][pieceColumn+index])
                 right = false
@@ -196,7 +212,7 @@ class Piece: UIImageView {
             {
                 rookMoves.append(squaresGrid[pieceRow][pieceColumn-index])
             }
-            else if left && squaresGrid[pieceRow][pieceColumn-index].occupiedBy == "b"
+            else if left && squaresGrid[pieceRow][pieceColumn-index].occupiedBy != pieceColor
             {
                 rookMoves.append(squaresGrid[pieceRow][pieceColumn-index])
                 left = false
@@ -211,7 +227,7 @@ class Piece: UIImageView {
         return rookMoves
     }
     
-    func bishopMoves(color: String) -> Array<Square>
+    func bishopMoves() -> Array<Square>
     {
         var upR = true
         var downR = true
@@ -237,7 +253,7 @@ class Piece: UIImageView {
                     bishopMoves.append(squaresGrid[pieceRow-index][pieceColumn+index])
                     
                 }
-                else if upR && squaresGrid[pieceRow-index][pieceColumn+index].occupiedBy == "b"
+                else if upR && squaresGrid[pieceRow-index][pieceColumn+index].occupiedBy != pieceColor
                 {
                     bishopMoves.append(squaresGrid[pieceRow-index][pieceColumn+index])
                     upR = false
@@ -251,7 +267,7 @@ class Piece: UIImageView {
                 {
                     bishopMoves.append(squaresGrid[pieceRow+index][pieceColumn+index])
                 }
-                else if downR && squaresGrid[pieceRow+index][pieceColumn+index].occupiedBy == "b"
+                else if downR && squaresGrid[pieceRow+index][pieceColumn+index].occupiedBy != pieceColor
                 {
                     bishopMoves.append(squaresGrid[pieceRow+index][pieceColumn+index])
                     downR = false
@@ -265,7 +281,7 @@ class Piece: UIImageView {
                 {
                     bishopMoves.append(squaresGrid[pieceRow-index][pieceColumn-index])
                 }
-                else if upL && squaresGrid[pieceRow-index][pieceColumn-index].occupiedBy == "b"
+                else if upL && squaresGrid[pieceRow-index][pieceColumn-index].occupiedBy != pieceColor
                 {
                     bishopMoves.append(squaresGrid[pieceRow-index][pieceColumn-index])
                     upL = false
@@ -279,7 +295,7 @@ class Piece: UIImageView {
                 {
                     bishopMoves.append(squaresGrid[pieceRow+index][pieceColumn-index])
                 }
-                else if downL && squaresGrid[pieceRow+index][pieceColumn-index].occupiedBy == "b"
+                else if downL && squaresGrid[pieceRow+index][pieceColumn-index].occupiedBy != pieceColor
                 {
                     bishopMoves.append(squaresGrid[pieceRow+index][pieceColumn-index])
                     downL = false
@@ -342,10 +358,6 @@ class Piece: UIImageView {
             
             
         }
-        
-        
-        
-      
         return knightMoves
     }
     
