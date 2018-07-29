@@ -12,7 +12,6 @@ class Piece: UIImageView {
     
     var pieceType = ""
     var pieceColor = ""
-    var pieceImage = UIImage()
     var pieceRow = 0
     var pieceColumn = 0
     var beenMoved = false
@@ -23,7 +22,6 @@ class Piece: UIImageView {
         pieceType = type
         pieceColor = color
         beenMoved = false
-        pieceImage = image!
         pieceRow = rc[0]
         pieceColumn = rc[1]
         frame = CGRect(origin: squaresGrid[pieceRow][pieceColumn].getPosition(), size: CGSize(width: 37.5, height: 37.5))
@@ -38,7 +36,7 @@ class Piece: UIImageView {
         switch pieceType
         {
         case "Pawn":
-            moves = pawnMoves(color: pieceColor)
+            moves = pawnMoves()
         case "Rook":
             moves = rookMoves()
         case "Knight":
@@ -61,7 +59,7 @@ class Piece: UIImageView {
         squaresGrid[pieceRow][pieceColumn].isOccupied = false
         squaresGrid[pieceRow][pieceColumn].occupiedBy = ""
         
-        UIView.animate(withDuration: 0.5, animations: {self.frame.origin = to.getPosition()}, completion:
+        UIView.animate(withDuration: 0.375, animations: {self.frame.origin = to.getPosition()}, completion:
             {
                 finished in
                 if to.isOccupied
@@ -102,44 +100,32 @@ class Piece: UIImageView {
     }
     
     
-    func pawnMoves(color: String) -> Array<Square>
+    func pawnMoves() -> Array<Square>
     {
         var pawnMoves = [Square]()
-        
-        if color == "w"
+        var direc = -1
+        if pieceColor == "b"
         {
-            if !squaresGrid[pieceRow-1][pieceColumn].isOccupied && squaresGrid[pieceRow-1][pieceColumn].isInBounds
-            {
-                pawnMoves.append(squaresGrid[pieceRow-1][pieceColumn])
-                
-            }
-//            if squaresGrid[pieceRow-1][pieceColumn+1].isOccupied && squaresGrid[pieceRow-1][pieceColumn].isInBounds
-//            {
-//                pawnMoves.append(squaresGrid[pieceRow-1][pieceColumn-1])
-//            }
-            
-            if !beenMoved && !squaresGrid[pieceRow-1][pieceColumn].isOccupied && !squaresGrid[pieceRow-2][pieceColumn].isOccupied
-            {
-                pawnMoves.append(squaresGrid[pieceRow-2][pieceColumn])
-            }
+            direc = 1
         }
-        else{
-            if !squaresGrid[pieceRow+1][pieceColumn].isOccupied && squaresGrid[pieceRow+1][pieceColumn].isInBounds
-            {
-                pawnMoves.append(squaresGrid[pieceRow+1][pieceColumn])
-                
-            }
-//            if squaresGrid[pieceRow+1][pieceColumn+1].isOccupied && squaresGrid[pieceRow+1][pieceColumn].isInBounds
-//            {
-//                pawnMoves.append(squaresGrid[pieceRow-1][pieceColumn-1])
-//            }
+        if !squaresGrid[pieceRow+direc][pieceColumn].isOccupied && squaresGrid[pieceRow+direc][pieceColumn].isInBounds
+        {
+            pawnMoves.append(squaresGrid[pieceRow+direc][pieceColumn])
             
-            if !beenMoved && !squaresGrid[pieceRow+1][pieceColumn].isOccupied && !squaresGrid[pieceRow+2][pieceColumn].isOccupied
-            {
-                pawnMoves.append(squaresGrid[pieceRow+2][pieceColumn])
-            }
+        }
+        if squaresGrid[pieceRow+direc][pieceColumn+1].occupiedBy != pieceColor && squaresGrid[pieceRow+direc][pieceColumn+1].occupiedBy != ""
+        {
+            pawnMoves.append(squaresGrid[pieceRow+direc][pieceColumn+1])
+        }
+        if squaresGrid[pieceRow+direc][pieceColumn-1].occupiedBy != pieceColor && squaresGrid[pieceRow+direc][pieceColumn-1].occupiedBy != ""
+        {
+            pawnMoves.append(squaresGrid[pieceRow+direc][pieceColumn-1])
         }
         
+        if !beenMoved && !squaresGrid[pieceRow+direc][pieceColumn].isOccupied && !squaresGrid[pieceRow+(direc*2)][pieceColumn].isOccupied
+        {
+            pawnMoves.append(squaresGrid[pieceRow+(direc*2)][pieceColumn])
+        }
         
         return pawnMoves
     }
@@ -246,66 +232,66 @@ class Piece: UIImageView {
             length = 7
         }
         
-            for index in 1...length
+        for index in 1...length
+        {
+            if upR && squaresGrid[pieceRow-index][pieceColumn+index].isInBounds && !squaresGrid[pieceRow-index][pieceColumn+index].isOccupied
             {
-                if upR && squaresGrid[pieceRow-index][pieceColumn+index].isInBounds && !squaresGrid[pieceRow-index][pieceColumn+index].isOccupied
-                {
-                    bishopMoves.append(squaresGrid[pieceRow-index][pieceColumn+index])
-                    
-                }
-                else if upR && squaresGrid[pieceRow-index][pieceColumn+index].occupiedBy != pieceColor
-                {
-                    bishopMoves.append(squaresGrid[pieceRow-index][pieceColumn+index])
-                    upR = false
-                }
-                else
-                {
-                    upR = false
-                }
-                
-                if downR && squaresGrid[pieceRow+index][pieceColumn+index].isInBounds && !squaresGrid[pieceRow+index][pieceColumn+index].isOccupied
-                {
-                    bishopMoves.append(squaresGrid[pieceRow+index][pieceColumn+index])
-                }
-                else if downR && squaresGrid[pieceRow+index][pieceColumn+index].occupiedBy != pieceColor
-                {
-                    bishopMoves.append(squaresGrid[pieceRow+index][pieceColumn+index])
-                    downR = false
-                }
-                else
-                {
-                    downR = false
-                }
-                
-                if upL && squaresGrid[pieceRow-index][pieceColumn-index].isInBounds && !squaresGrid[pieceRow-index][pieceColumn-index].isOccupied
-                {
-                    bishopMoves.append(squaresGrid[pieceRow-index][pieceColumn-index])
-                }
-                else if upL && squaresGrid[pieceRow-index][pieceColumn-index].occupiedBy != pieceColor
-                {
-                    bishopMoves.append(squaresGrid[pieceRow-index][pieceColumn-index])
-                    upL = false
-                }
-                else
-                {
-                    upL = false
-                }
-                
-                if downL && squaresGrid[pieceRow+index][pieceColumn-index].isInBounds && !squaresGrid[pieceRow+index][pieceColumn-index].isOccupied
-                {
-                    bishopMoves.append(squaresGrid[pieceRow+index][pieceColumn-index])
-                }
-                else if downL && squaresGrid[pieceRow+index][pieceColumn-index].occupiedBy != pieceColor
-                {
-                    bishopMoves.append(squaresGrid[pieceRow+index][pieceColumn-index])
-                    downL = false
-                }
-                else
-                {
-                    downL = false
-                }
+                bishopMoves.append(squaresGrid[pieceRow-index][pieceColumn+index])
                 
             }
+            else if upR && squaresGrid[pieceRow-index][pieceColumn+index].occupiedBy != pieceColor
+            {
+                bishopMoves.append(squaresGrid[pieceRow-index][pieceColumn+index])
+                upR = false
+            }
+            else
+            {
+                upR = false
+            }
+            
+            if downR && squaresGrid[pieceRow+index][pieceColumn+index].isInBounds && !squaresGrid[pieceRow+index][pieceColumn+index].isOccupied
+            {
+                bishopMoves.append(squaresGrid[pieceRow+index][pieceColumn+index])
+            }
+            else if downR && squaresGrid[pieceRow+index][pieceColumn+index].occupiedBy != pieceColor
+            {
+                bishopMoves.append(squaresGrid[pieceRow+index][pieceColumn+index])
+                downR = false
+            }
+            else
+            {
+                downR = false
+            }
+            
+            if upL && squaresGrid[pieceRow-index][pieceColumn-index].isInBounds && !squaresGrid[pieceRow-index][pieceColumn-index].isOccupied
+            {
+                bishopMoves.append(squaresGrid[pieceRow-index][pieceColumn-index])
+            }
+            else if upL && squaresGrid[pieceRow-index][pieceColumn-index].occupiedBy != pieceColor
+            {
+                bishopMoves.append(squaresGrid[pieceRow-index][pieceColumn-index])
+                upL = false
+            }
+            else
+            {
+                upL = false
+            }
+            
+            if downL && squaresGrid[pieceRow+index][pieceColumn-index].isInBounds && !squaresGrid[pieceRow+index][pieceColumn-index].isOccupied
+            {
+                bishopMoves.append(squaresGrid[pieceRow+index][pieceColumn-index])
+            }
+            else if downL && squaresGrid[pieceRow+index][pieceColumn-index].occupiedBy != pieceColor
+            {
+                bishopMoves.append(squaresGrid[pieceRow+index][pieceColumn-index])
+                downL = false
+            }
+            else
+            {
+                downL = false
+            }
+            
+        }
         return bishopMoves
     }
     
@@ -314,7 +300,7 @@ class Piece: UIImageView {
     {
         var knightMoves = [Square]()
         var index = -1
-
+        
         //r +/- 1, r +/- 2, c +/- 1  c +/- 1, c +/- 2, r +/- 1
         for count in -2...2
         {
@@ -360,6 +346,24 @@ class Piece: UIImageView {
         }
         return knightMoves
     }
+    
+    func promote() -> UIAlertController
+    {
+        let alert = UIAlertController(title: "Promote your pawn", message: "", preferredStyle: .alert)
+        
+        let promotions = ["Queen", "Rook", "Knight", "Bishop"]
+        for type in promotions
+        {
+            alert.addAction(UIAlertAction(title: type, style: .default, handler: { (action) in
+                self.pieceType = type
+                self.image = UIImage(named: self.pieceColor+self.pieceType)
+            }))
+        }
+       
+        return alert
+        
+    }
+    
     
     func remove()
     {

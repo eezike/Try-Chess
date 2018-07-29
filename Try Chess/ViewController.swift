@@ -40,7 +40,6 @@ class ViewController: UIViewController, UICollectionViewDataSource, UICollection
         startButton.setTitleColor(.blue, for: .normal) //start button color is blue
         startButton.addTarget(self, action: #selector(startGame(_:)), for: .touchUpInside) //start button calls "startGame" action
         self.view.addSubview(startButton) //adds the start button to the view
-        
     }
     //===================================================
     
@@ -52,10 +51,10 @@ class ViewController: UIViewController, UICollectionViewDataSource, UICollection
         for index in 0...9
         {
             //out-of-bounds are white in color
-            squaresGrid[0][index].backgroundColor = .white
-            squaresGrid[9][index].backgroundColor = .white
-            squaresGrid[index][0].backgroundColor = .white
-            squaresGrid[index][9].backgroundColor = .white
+            squaresGrid[0][index].backgroundColor = self.view.backgroundColor
+            squaresGrid[9][index].backgroundColor = self.view.backgroundColor
+            squaresGrid[index][0].backgroundColor = self.view.backgroundColor
+            squaresGrid[index][9].backgroundColor = self.view.backgroundColor
             //out-of-buonds are not in bounds (property of custom Square class)
             squaresGrid[0][index].isInBounds = false
             squaresGrid[9][index].isInBounds = false
@@ -176,8 +175,14 @@ class ViewController: UIViewController, UICollectionViewDataSource, UICollection
                 {
                     pieceSelected[0].getSquare().backgroundColor = pieceSelected[0].getSquare().color
                     pieceSelected[0].move(to: squares[indexPath.item])
+                    if pieceSelected[0].pieceType == "Pawn" && (pieceSelected[0].pieceRow == 1 || pieceSelected[0].pieceRow == 8)
+                    {
+                       self.present(pieceSelected[0].promote(), animated: true, completion: nil)
+                    }
                     pieceSelected.removeAll()
-                    turn += 1
+                    
+                    
+                    //turn += 1
                 }
             }
             if !pieceSelected.isEmpty
@@ -223,9 +228,9 @@ class ViewController: UIViewController, UICollectionViewDataSource, UICollection
                 whitePieces.append(wSpecialPiece)
                 view.addSubview(wSpecialPiece)
                 
-                //            let bSpecialPiece = Piece(type: specialPieces[index-1], color: "b", rc: [1, index])
-                //            blackPieces.append(bSpecialPiece)
-                //            view.addSubview(bSpecialPiece)
+                let bSpecialPiece = Piece(type: specialPieces[index-1], color: "b", rc: [1, index])
+                blackPieces.append(bSpecialPiece)
+                view.addSubview(bSpecialPiece)
             }
             else
             {
@@ -233,9 +238,9 @@ class ViewController: UIViewController, UICollectionViewDataSource, UICollection
                 whitePieces.append(wSpecialPiece)
                 view.addSubview(wSpecialPiece)
                 
-                //            let bSpecialPiece = Piece(type: specialPieces[8-index], color: "b", rc: [1, index])
-                //            blackPieces.append(bSpecialPiece)
-                //            view.addSubview(bSpecialPiece)
+                let bSpecialPiece = Piece(type: specialPieces[8-index], color: "b", rc: [1, index])
+                blackPieces.append(bSpecialPiece)
+                view.addSubview(bSpecialPiece)
             }
             
         }
