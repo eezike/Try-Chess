@@ -9,7 +9,7 @@
 import UIKit
 
 class Piece: UIImageView {
-
+    
     var pieceType = ""
     var pieceColor = ""
     var pieceImage = UIImage()
@@ -30,49 +30,39 @@ class Piece: UIImageView {
         squaresGrid[pieceRow][pieceColumn].isOccupied = true
     }
     
-    func availMoves () -> Array<Any>
+    func availMoves () -> Array<Square>
     {
-        var moves = [[Int]()]
-        if pieceColor == "w"
-        {
-            switch pieceType
-            {
-            case "Pawn":
-                moves = pawnMoves(color: pieceColor)
-            case "rook":
-                moves.append([pieceRow, pieceColumn])
-
-            default:
-                break
-            }
-        }
-        else
-        {
-            switch pieceType
-            {
-            case "Pawn":
-                moves = pawnMoves(color: pieceColor)
-            case "rook":
-                moves.append([pieceRow, pieceColumn])
-            default:
-                break
-            }
-        }
+        var moves = [Square]()
         
+        switch pieceType
+        {
+        case "Pawn":
+            moves = pawnMoves(color: pieceColor)
+        case "Rook":
+            moves = rookMoves(color: pieceColor)
+        case "Knight":
+            moves = pawnMoves(color: pieceColor)
+        case "Bishop":
+            moves = bishopMoves(color: pieceColor)
+        case "Queen":
+            moves = rookMoves(color: pieceColor) + bishopMoves(color: pieceColor)
+        case "King":
+            moves = pawnMoves(color: pieceColor)
+        default:
+            break
+        }
         
         return moves
     }
     
-    func move(to: Array<Int>)
+    func move(to: Square)
     {
-        if !squaresGrid[to[0]][to[1]].isOccupied
-        {
-            squaresGrid[pieceRow][pieceColumn].isOccupied = false
-            pieceRow = to[0]
-            pieceColumn = to[1]
-            UIView.animate(withDuration: 1, animations: {self.frame.origin = squaresGrid[to[0]][to[1]].getPosition()}, completion: nil)
-            beenMoved = true
-        }
+        squaresGrid[pieceRow][pieceColumn].isOccupied = false
+        pieceRow = to.r
+        pieceColumn = to.c
+        to.isOccupied = true
+        UIView.animate(withDuration: 0.5, animations: {self.frame.origin = to.getPosition()}, completion: nil)
+        beenMoved = true
         
     }
     
@@ -82,26 +72,141 @@ class Piece: UIImageView {
     }
     
     
-    func pawnMoves(color: String) -> [Array<Int>]
+    func pawnMoves(color: String) -> Array<Square>
     {
-        var pawnMoves = [[Int]()]
+        var pawnMoves = [Square]()
         
-        if !squaresGrid[pieceRow-1][pieceColumn].isOccupied && squaresGrid[pieceRow-1][pieceColumn].isInBounds
+        if color == "w"
         {
-            pawnMoves.append([pieceRow-1, pieceColumn])
+            if !squaresGrid[pieceRow-1][pieceColumn].isOccupied && squaresGrid[pieceRow-1][pieceColumn].isInBounds
+            {
+                pawnMoves.append(squaresGrid[pieceRow-1][pieceColumn])
+                
+            }
+            if squaresGrid[pieceRow-1][pieceColumn+1].isOccupied && squaresGrid[pieceRow-1][pieceColumn].isInBounds
+            {
+                pawnMoves.append(squaresGrid[pieceRow-1][pieceColumn-1])
+            }
             
-        }
-        if squaresGrid[pieceRow-1][pieceColumn+1].isOccupied && squaresGrid[pieceRow-1][pieceColumn].isInBounds
-        {
-            pawnMoves.append([pieceRow-1, pieceColumn-1])
+            if !beenMoved && !squaresGrid[pieceRow-1][pieceColumn].isOccupied && !squaresGrid[pieceRow-2][pieceColumn].isOccupied
+            {
+                pawnMoves.append(squaresGrid[pieceRow-2][pieceColumn])
+            }
         }
         
-        if !beenMoved && !squaresGrid[pieceRow-1][pieceColumn].isOccupied && !squaresGrid[pieceRow-2][pieceColumn].isOccupied
-        {
-            pawnMoves.append([pieceRow-2, pieceColumn])
-        }
         
         return pawnMoves
+    }
+    
+    
+    func rookMoves(color: String) -> Array<Square>
+    {
+        var up = true
+        var down = true
+        var left = true
+        var right = true
+        var rookMoves = [Square]()
+        
+        if color == "w"
+        {
+            for index in 1...7
+            {
+                if up && squaresGrid[pieceRow-index][pieceColumn].isInBounds && !squaresGrid[pieceRow-index][pieceColumn].isOccupied
+                {
+                    rookMoves.append(squaresGrid[pieceRow-index][pieceColumn])
+                }
+                else
+                {
+                    up = false
+                }
+                if down && squaresGrid[pieceRow+index][pieceColumn].isInBounds && !squaresGrid[pieceRow+index][pieceColumn].isOccupied
+                {
+                    rookMoves.append(squaresGrid[pieceRow+index][pieceColumn])
+                }
+                else
+                {
+                   down = false
+                }
+
+                if right && squaresGrid[pieceRow][pieceColumn+index].isInBounds && !squaresGrid[pieceRow][pieceColumn+index].isOccupied
+                {
+                    rookMoves.append(squaresGrid[pieceRow][pieceColumn+index])
+                }
+                else
+                {
+                    right = false
+                }
+
+                if left && squaresGrid[pieceRow][pieceColumn-index].isInBounds && !squaresGrid[pieceRow][pieceColumn-index].isOccupied
+                {
+                    rookMoves.append(squaresGrid[pieceRow][pieceColumn-index])
+                }
+                else
+                {
+                    left = false
+                }
+                
+            }
+            
+        }
+        
+        
+        return rookMoves
+    }
+    
+    func bishopMoves(color: String) -> Array<Square>
+    {
+        var upR = true
+        var downR = true
+        var upL = true
+        var downL = true
+        var bishopMoves = [Square]()
+        
+        if color == "w"
+        {
+            for index in 1...7
+            {
+                if upR && squaresGrid[pieceRow-index][pieceColumn+index].isInBounds && !squaresGrid[pieceRow-index][pieceColumn+index].isOccupied
+                {
+                    bishopMoves.append(squaresGrid[pieceRow-index][pieceColumn+index])
+                }
+                else
+                {
+                    upR = false
+                }
+                if downR && squaresGrid[pieceRow+index][pieceColumn+index].isInBounds && !squaresGrid[pieceRow+index][pieceColumn+index].isOccupied
+                {
+                    bishopMoves.append(squaresGrid[pieceRow+index][pieceColumn+index])
+                }
+                else
+                {
+                    downR = false
+                }
+                
+                if upL && squaresGrid[pieceRow-index][pieceColumn-index].isInBounds && !squaresGrid[pieceRow-index][pieceColumn-index].isOccupied
+                {
+                    bishopMoves.append(squaresGrid[pieceRow-index][pieceColumn-index])
+                }
+                else
+                {
+                    upL = false
+                }
+                
+                if downL && squaresGrid[pieceRow+index][pieceColumn-index].isInBounds && !squaresGrid[pieceRow+index][pieceColumn-index].isOccupied
+                {
+                    bishopMoves.append(squaresGrid[pieceRow+index][pieceColumn-index])
+                }
+                else
+                {
+                    downL = false
+                }
+                
+            }
+            
+        }
+        
+        
+        return bishopMoves
     }
     
     required init?(coder aDecoder: NSCoder) {

@@ -11,8 +11,11 @@ import UIKit
 class Square: UICollectionViewCell {
     
     var value = 0
+    var color = UIColor.white
     var isOccupied = false
     var isInBounds = true
+    var r = 0
+    var c = 0
 
     
     func getX() -> CGFloat
