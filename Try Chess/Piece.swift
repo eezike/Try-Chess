@@ -42,13 +42,13 @@ class Piece: UIImageView {
         case "Rook":
             moves = rookMoves(color: pieceColor)
         case "Knight":
-            moves = pawnMoves(color: pieceColor)
+            moves = knightMoves()
         case "Bishop":
             moves = bishopMoves(color: pieceColor)
         case "Queen":
             moves = rookMoves(color: pieceColor) + bishopMoves(color: pieceColor)
         case "King":
-            moves = pawnMoves(color: pieceColor)
+            moves = rookMoves(color: pieceColor) + bishopMoves(color: pieceColor)
         default:
             break
         }
@@ -137,7 +137,18 @@ class Piece: UIImageView {
         var right = true
         var rookMoves = [Square]()
         
-        for index in 1...7
+        var length = 0
+        
+        if pieceType == "King"
+        {
+            length = 1
+        }
+        else
+        {
+            length = 7
+        }
+        
+        for index in 1...length
         {
             if up && squaresGrid[pieceRow-index][pieceColumn].isInBounds && !squaresGrid[pieceRow-index][pieceColumn].isOccupied
             {
@@ -208,9 +219,18 @@ class Piece: UIImageView {
         var downL = true
         var bishopMoves = [Square]()
         
-        if color == "w"
+        var length = 0
+        
+        if pieceType == "King"
         {
-            for index in 1...7
+            length = 1
+        }
+        else
+        {
+            length = 7
+        }
+        
+            for index in 1...length
             {
                 if upR && squaresGrid[pieceRow-index][pieceColumn+index].isInBounds && !squaresGrid[pieceRow-index][pieceColumn+index].isOccupied
                 {
@@ -270,13 +290,64 @@ class Piece: UIImageView {
                 }
                 
             }
+        return bishopMoves
+    }
+    
+    
+    func knightMoves() -> Array<Square>
+    {
+        var knightMoves = [Square]()
+        var index = -1
+
+        //r +/- 1, r +/- 2, c +/- 1  c +/- 1, c +/- 2, r +/- 1
+        for count in -2...2
+        {
+            if count == 0
+            {
+                continue
+            }
+            
+            if count % 2 == 0
+            {
+                index = 1
+            }
+            else
+            {
+                index = -1
+            }
+            
+            if squaresGrid[pieceRow+index][pieceColumn].isInBounds
+            {
+                if squaresGrid[pieceRow+(index*2)][pieceColumn].isInBounds
+                {
+                    if squaresGrid[pieceRow+(index*2)][pieceColumn+(count/abs(count))].isInBounds || (squaresGrid[pieceRow+(index*2)][pieceColumn+(count/abs(count))].occupiedBy != pieceColor)
+                    {
+                        knightMoves.append(squaresGrid[pieceRow+(index*2)][pieceColumn+(count/abs(count))])
+                    }
+                }
+                
+            }
+            
+            if squaresGrid[pieceRow][pieceColumn+index].isInBounds
+            {
+                if squaresGrid[pieceRow][pieceColumn+(index*2)].isInBounds
+                {
+                    if squaresGrid[pieceRow+(count/abs(count))][pieceColumn+(index*2)].isInBounds && (squaresGrid[pieceRow+(count/abs(count))][pieceColumn+(index*2)].occupiedBy != pieceColor)
+                    {
+                        knightMoves.append(squaresGrid[pieceRow+(count/abs(count))][pieceColumn+(index*2)])
+                    }
+                }
+                
+            }
+            
             
         }
         
         
-        return bishopMoves
+        
+      
+        return knightMoves
     }
-    
     
     func remove()
     {
