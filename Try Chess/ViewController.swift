@@ -7,20 +7,25 @@
 //
 
 //squaresGrid[1][1].value is 11 at 00
+/*Streamlines:
+ -isOccupied and occupied by should be the same
+ */
 import UIKit
 
 //These are accessable to all classes
 var squaresGrid = [[Square]()] //Holds a grid of the entire board plus the out-boundries
-var squares = [Square]() //Holds all the out and in squares from 0 to 99
+var whitePieces = [Piece]() //the white players pieces
+var blackPieces = [Piece]() //the black players pieces
+
 
 class ViewController: UIViewController, UICollectionViewDataSource, UICollectionViewDelegate {
     
     var startButton =  UIButton(frame: CGRect(x: 150, y: 200, width: 100, height: 80)) //creates a start button
     
-    var whitePieces = [Piece]() //the white players pieces
-    var blackPieces = [Piece]() //the black players pieces
+   
     var turn = 0 //when it is even, white goes; when it is odd, black goes
     var pieceSelected = [Piece]()//if either player has selected a piece
+    var squares = [Square]() //Holds all the out and in squares from 0 to 99
     
     
     
