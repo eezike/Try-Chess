@@ -21,8 +21,8 @@ var blackPieces = [Piece]() //the black players pieces
 class ViewController: UIViewController, UICollectionViewDataSource, UICollectionViewDelegate {
     
     var startButton =  UIButton(frame: CGRect(x: 150, y: 200, width: 100, height: 80)) //creates a start button
-    
    
+    var kings = [Piece]()
     var turn = 0 //when it is even, white goes; when it is odd, black goes
     var pieceSelected = [Piece]()//if either player has selected a piece
     var squares = [Square]() //Holds all the out and in squares from 0 to 99
@@ -148,7 +148,6 @@ class ViewController: UIViewController, UICollectionViewDataSource, UICollection
                 {
                     if piece.getSquare() == squares[indexPath.item] //go to the square in all of whites pieces that is the same as the tapped square on the grid
                     {
-                        print(piece.pieceColor+piece.pieceType)// for testing
                         squares[indexPath.item].backgroundColor = .red //shows that it is selected
                         pieceSelected.append(piece) //hold that piece
                     }
@@ -160,7 +159,6 @@ class ViewController: UIViewController, UICollectionViewDataSource, UICollection
                 {
                     if piece.getSquare() == squares[indexPath.item] //go to the square in all of whites pieces that is the same as the tapped square on the grid
                     {
-                        print(piece.pieceColor+piece.pieceType)// for testing
                         squares[indexPath.item].backgroundColor = .red //shows that it is selected
                         pieceSelected.append(piece) //hold that piece
                     }
@@ -169,22 +167,24 @@ class ViewController: UIViewController, UICollectionViewDataSource, UICollection
         }
         else //if a piece has been selected
         {
-            for move in pieceSelected[0].availMoves()
-            {
-                if move == squares[indexPath.item]
+                for move in pieceSelected[0].availMoves()
                 {
-                    pieceSelected[0].getSquare().backgroundColor = pieceSelected[0].getSquare().color
-                    pieceSelected[0].move(to: squares[indexPath.item])
-                    if pieceSelected[0].pieceType == "Pawn" && (pieceSelected[0].pieceRow == 1 || pieceSelected[0].pieceRow == 8)
+                    if move == squares[indexPath.item]
                     {
-                       self.present(pieceSelected[0].promote(), animated: true, completion: nil)
+                        pieceSelected[0].getSquare().backgroundColor = pieceSelected[0].getSquare().color
+                        pieceSelected[0].move(to: squares[indexPath.item])
+                        if pieceSelected[0].pieceType == "Pawn" && (pieceSelected[0].pieceRow == 1 || pieceSelected[0].pieceRow == 8)
+                        {
+                            self.present(pieceSelected[0].promote(), animated: true, completion: nil)
+                        }
+                        pieceSelected.removeAll()
+                        blackCheck()
+                        checkForCheckmate()
+                        turn += 1
                     }
-                    pieceSelected.removeAll()
-                    
-                    
-                    //turn += 1
                 }
-            }
+            
+            
             if !pieceSelected.isEmpty
             {
                 pieceSelected[0].getSquare().backgroundColor = pieceSelected[0].getSquare().color
@@ -218,7 +218,7 @@ class ViewController: UIViewController, UICollectionViewDataSource, UICollection
             view.addSubview(bPawn)
         }
         
-        var specialPieces = ["Rook", "Bishop", "Knight", "Queen", "King"]
+        var specialPieces = ["Rook", "Knight", "Bishop", "Queen", "King"]
         
         for index in 1...8
         {
@@ -231,6 +231,12 @@ class ViewController: UIViewController, UICollectionViewDataSource, UICollection
                 let bSpecialPiece = Piece(type: specialPieces[index-1], color: "b", rc: [1, index])
                 blackPieces.append(bSpecialPiece)
                 view.addSubview(bSpecialPiece)
+                
+                if index == 5
+                {
+                    kings.append(wSpecialPiece)
+                    kings.append(bSpecialPiece)
+                }
             }
             else
             {
@@ -244,6 +250,53 @@ class ViewController: UIViewController, UICollectionViewDataSource, UICollection
             }
             
         }
+    }
+    
+    func blackCheck() -> Bool
+    {
+        for piece in whitePieces
+        {
+            for move in piece.availMoves()
+            {
+                if move == kings[1].getSquare()
+                {
+                    print("Check from: "+piece.pieceType)
+                    //print("blackInCheck")
+                    return true
+                }
+            }
+        }
+        
+        return false
+    }
+    
+    func checkForCheckmate()
+    {
+        if blackCheck()
+        {
+
+            for piece in blackPieces
+            {
+
+                for move in piece.availMoves()
+                {
+                    piece.simMove(to: move)
+                    if !blackCheck()
+                    {
+                        print(piece.pieceType+" can block check")
+                        print(move.value)
+                        piece.goBack(to: move)
+                       return
+                    }
+                    else{
+                        piece.goBack(to: move)
+                    }
+                    
+                }
+            }
+            print("checkmate")
+        }
+        
     }
     
     override func didReceiveMemoryWarning() {
