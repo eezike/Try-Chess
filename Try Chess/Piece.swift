@@ -14,8 +14,6 @@ class Piece: UIImageView {
     var pieceColor = ""
     var pieceRow = 0
     var pieceColumn = 0
-    var holdR = 0
-    var holdC = 0
     var beenMoved = false
     
     init(type: String, color: String, rc: Array<Int>) {
@@ -101,7 +99,10 @@ class Piece: UIImageView {
     }
     
     //===================================================
+    //Needed to check for Check and Checkmate
     var blockingPiece = [Piece]()
+    var holdR = 0
+    var holdC = 0
     func simMove(to: Square)
     {
         squaresGrid[pieceRow][pieceColumn].isOccupied = false
@@ -120,6 +121,18 @@ class Piece: UIImageView {
                             }
                         }
                     }
+                    else
+                    {
+                        for piece in blackPieces
+                        {
+                            if piece.getSquare() == to
+                            {
+                                blackPieces.remove(at: blackPieces.index(of: piece)!)
+                                blockingPiece.append(piece)
+                            }
+                        }
+                    }
+                    
 
                 }
         holdR = pieceRow
@@ -137,9 +150,17 @@ class Piece: UIImageView {
         to.occupiedBy = ""
         if !blockingPiece.isEmpty
         {
-            whitePieces.append(blockingPiece[0])
+            if blockingPiece[0].pieceType == "w"
+            {
+                whitePieces.append(blockingPiece[0])
+                to.occupiedBy = "w"
+            }
+            else
+            {
+                blackPieces.append(blockingPiece[0])
+                to.occupiedBy = "b"
+            }
             to.isOccupied = true
-            to.occupiedBy = "w"
         }
         pieceRow = holdR
         pieceColumn = holdC

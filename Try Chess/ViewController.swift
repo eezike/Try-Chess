@@ -178,7 +178,6 @@ class ViewController: UIViewController, UICollectionViewDataSource, UICollection
                             self.present(pieceSelected[0].promote(), animated: true, completion: nil)
                         }
                         pieceSelected.removeAll()
-                        blackCheck()
                         checkForCheckmate()
                         turn += 1
                     }
@@ -252,7 +251,7 @@ class ViewController: UIViewController, UICollectionViewDataSource, UICollection
         }
     }
     
-    func blackCheck() -> Bool
+    func inCheck() -> String
     {
         for piece in whitePieces
         {
@@ -260,33 +259,71 @@ class ViewController: UIViewController, UICollectionViewDataSource, UICollection
             {
                 if move == kings[1].getSquare()
                 {
-                    print("Check from: "+piece.pieceType)
-                    //print("blackInCheck")
-                    return true
+                    //print("Check from: "+piece.pieceType)
+                    print("blackInCheck")
+                    return "b"
                 }
             }
         }
         
-        return false
+        for piece in blackPieces
+        {
+            for move in piece.availMoves()
+            {
+                if move == kings[0].getSquare()
+                {
+                    //print("Check from: "+piece.pieceType)
+                    print("whiteInCheck")
+                    return "w"
+                }
+            }
+        }
+        
+        return ""
     }
     
     func checkForCheckmate()
     {
-        if blackCheck()
+        if inCheck() == "b"
         {
-
+            
             for piece in blackPieces
             {
-
+                
                 for move in piece.availMoves()
                 {
                     piece.simMove(to: move)
-                    if !blackCheck()
+                    if inCheck() != "b"
                     {
-                        print(piece.pieceType+" can block check")
-                        print(move.value)
+                        //print(piece.pieceType+" can block check")
+                        //print(move.value)
                         piece.goBack(to: move)
-                       return
+                        return
+                    }
+                    else{
+                        piece.goBack(to: move)
+                    }
+                    
+                }
+            }
+            print("checkmate")
+        }
+        
+        if inCheck() == "w"
+        {
+            
+            for piece in whitePieces
+            {
+                
+                for move in piece.availMoves()
+                {
+                    piece.simMove(to: move)
+                    if inCheck() != "w"
+                    {
+                        //print(piece.pieceType+" can block check")
+                        //print(move.value)
+                        piece.goBack(to: move)
+                        return
                     }
                     else{
                         piece.goBack(to: move)
